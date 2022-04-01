@@ -29,9 +29,6 @@ url_list = [
 def handler(sigum, frame):
     raise Exception("Request Sent")
 
-
-
-
 def lambda_handler(event, context):
     signal.signal(signal.SIGALRM, handler)
 

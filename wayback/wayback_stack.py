@@ -1,8 +1,8 @@
 from aws_cdk import (
+    Duration,
     aws_lambda as lambda_,
     aws_events as event,
     aws_events_targets as targets,
-
     Stack,
 )
 from constructs import Construct
@@ -13,17 +13,16 @@ class WaybackStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        
-
         wayback_function = lambda_python.PythonFunction(
             self,
             "wayback",
             function_name="WaybackArchiver",
             runtime=lambda_.Runtime.PYTHON_3_9,
-            entry="./app",
+            entry="./wayback_app",
             index="app.py",
             handler="lambda_handler",
-            memory_size=128,
+            memory_size=256,
+            timeout=Duration.seconds(300),
         )
 
         event.Rule(self, "WaybackRule",
