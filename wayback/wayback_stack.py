@@ -21,12 +21,12 @@ class WaybackStack(Stack):
             entry="./wayback_app",
             index="app.py",
             handler="lambda_handler",
-            memory_size=256,
+            memory_size=128,
             timeout=Duration.seconds(300),
         )
 
         event.Rule(self, "WaybackRule",
             rule_name="WaybackRule",
-            schedule=event.Schedule.cron(minute="0", hour="10"),
+            schedule=event.Schedule.cron(minute="0", hour="9"),
             targets=[targets.LambdaFunction(wayback_function)]
         )
