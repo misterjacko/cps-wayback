@@ -1,58 +1,106 @@
 
-# Welcome to your CDK Python project!
+# Welcome to the WayBackStack! #
 
-This is a blank project for Python development with CDK.
+This project will deploy an AWS Cloudformation stack that consists of two primary assets (Lambda Function and an Eventbridge rule to trigger said function) as well as associated assets such as roles/policies/etc. 
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+## Purpose ##
 
-This project is set up like a standard Python project.  The initialization
-process also creates a virtualenv within this project, stored under the `.venv`
-directory.  To create the virtualenv it assumes that there is a `python3`
-(or `python` for Windows) executable in your path with access to the `venv`
-package. If for any reason the automatic creation of the virtualenv fails,
-you can create the virtualenv manually.
+The purpose of this project is to automate archival of web pages to the internet archive at [web.archive.org](). In summary, an time based event will trigger a serverless function which will iterate over a list of urls, requesting each url be archived, waiting an amount of time, then requesting the next url on the list. 
 
-To manually create a virtualenv on MacOS and Linux:
+## Getting Started ##
+
+### Requirements ###
+- AWS CDK `v2.19` (maybe older)
+- Docker
+- Python3
+- pip3
+- AWS Account and credentials 
+    - stored in `.aws/credentials`
+    - or some other manner of authenticating
+
+### Create Virtual Environment ###
+
+__MacOS and Linux:__
+
+- Create and activate Virtual Environment:
 
 ```
-$ python3 -m venv .venv
-```
-
-After the init process completes and the virtualenv is created, you can use the following
-step to activate your virtualenv.
-
-```
+python3 -m venv .venv
 $ source .venv/bin/activate
 ```
 
-If you are a Windows platform, you would activate the virtualenv like this:
+__Windows__
+
+- Create and activate Virtual Environment:
 
 ```
-% .venv\Scripts\activate.bat
+python3 -m venv .venv
+.venv\Scripts\activate.bat
 ```
 
-Once the virtualenv is activated, you can install the required dependencies.
+__Install the required dependencies__
 
 ```
 $ pip install -r requirements.txt
 ```
 
-At this point you can now synthesize the CloudFormation template for this code.
+### Build and Deploying ###
 
+- Build (make sure docker is running)
+
+```sh
+cdk synth --no-staging
 ```
-$ cdk synth
+
+- Deploy (make sure you are sending to the correct account)
+
+```sh
+cdk deploy
 ```
 
-To add additional dependencies, for example other CDK libraries, just add
-them to your `setup.py` file and rerun the `pip install -r requirements.txt`
-command.
 
-## Useful commands
 
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
+## Modifying the Stack ##
 
-Enjoy!
+### Modifying URLs ###
+If you want to modify the list of urls, you can just do that and rebuild and deploy the stack (see above).  The list is managed in `/wayback_app/app.py` and can be expanded to close to 60 items before the timeout will need to be extended (see below). 
+
+```python
+ 9  url_list = [
+10      "https://api.cps.edu/health/help",
+...
+27  ]
+```
+
+
+It can be extended to near 180 accounting for the 15 minute Lambda execution time limit and the 5 second wait time in-between requests. This URL limit could potentially be increased to near 900 with the Lambda limit increased to max 0f 900 seconds and the wait time between wayback API requests reduced to 1 second.
+
+### Extend Lambda Timeout ###
+The Lambda is set to timeout after 300 seconds and the pause time in between requests is 5 seconds. This means if the list of URLs gets near 60, the timeout will need to be extended.  It is managed in `/wayback/wayback_stack.py`:
+
+```python
+25          timeout=Duration.seconds(300),
+```
+
+### Modify Wait In Between Requests ###
+
+The time that the function waits in between requests is managed in `/wayback_app/app.py` and can be modified.
+
+```python
+36        signal.alarm(5) # resets alarm
+```
+
+### Modify Invocation Time ###
+
+The Eventbridge Cron Job is manages in `wayback/wayback_stack.py` and follows standard crontab conventions and are set for the UTC timezone. Undeclared parameters (ie `day`, `month`, `week_day`, `year`) are set to `*` (eg. every `day` of the month). 
+
+```python 
+30            schedule=event.Schedule.cron(
+31                minute="0", 
+32                hour="9",
+33                ),
+```
+
+## More Stuff ##
+
+Explore and build more using the AWS CDK and python. Its fun. 
