@@ -23,7 +23,7 @@ class WaybackStack(Stack):
             handler="lambda_handler",
             memory_size=128,
             timeout=Duration.seconds(300),
-        )
+            )
 
         event.Rule(self, "WaybackRule",
             rule_name="WaybackRule",
@@ -31,5 +31,7 @@ class WaybackStack(Stack):
                 minute="0", 
                 hour="9",
                 ),
-            targets=[targets.LambdaFunction(wayback_function)]
-        )
+            targets=[
+                targets.LambdaFunction(wayback_function),
+                ],
+            )
