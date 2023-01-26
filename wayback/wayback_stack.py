@@ -1,8 +1,8 @@
 from aws_cdk import (
     Duration,
     aws_lambda as lambda_,
-    aws_events as event,
-    aws_events_targets as targets,
+    # aws_events as event,
+    # aws_events_targets as targets,
     Stack,
 )
 from constructs import Construct
@@ -25,13 +25,13 @@ class WaybackStack(Stack):
             timeout=Duration.seconds(300),
             )
 
-        event.Rule(self, "WaybackRule",
-            rule_name="WaybackRule",
-            schedule=event.Schedule.cron(
-                minute="0", 
-                hour="9",
-                ),
-            targets=[
-                targets.LambdaFunction(wayback_function),
-                ],
-            )
+        # event.Rule(self, "WaybackRule",
+        #     rule_name="WaybackRule",
+        #     schedule=event.Schedule.cron(
+        #         minute="0", 
+        #         hour="9",
+        #         ),
+        #     targets=[
+        #         targets.LambdaFunction(wayback_function),
+        #         ],
+        #     )
