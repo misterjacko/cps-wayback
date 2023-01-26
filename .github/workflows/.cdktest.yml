@@ -11,13 +11,14 @@ jobs:
       - name: check dir
         run: find . -regex '.*requirements.txt$'
       - name: cdk diff
-        uses: youyo/aws-cdk-github-actions@v2
+        run: sh pipe.sh
+        # uses: youyo/aws-cdk-github-actions@v2
         # uses: docker://mrmeyers99/aws-cdk-github-actions:2.1.0
-        with:
-          cdk_subcommand: 'diff'
-          # cdk_version: "2.18.0"
-          cdk_stack: "WaybackStack"
-          actions_comment: true
+        # with:
+        #   cdk_subcommand: 'diff'
+        #   # cdk_version: "2.18.0"
+        #   cdk_stack: "WaybackStack"
+        #   actions_comment: true
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
