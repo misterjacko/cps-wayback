@@ -29,7 +29,7 @@ class WaybackStack(Stack):
             rule_name="WaybackRule",
             schedule=event.Schedule.cron(
                 minute="0", 
-                hour="9",
+                hour="10",
                 ),
             targets=[
                 targets.LambdaFunction(wayback_function),
