@@ -33,7 +33,7 @@ def lambda_handler(event, context):
     signal.signal(signal.SIGALRM, handler)
 
     for url in url_list:
-        signal.alarm(5) # resets alarm
+        signal.alarm(6) # resets alarm
         try:
             save_api = WaybackMachineSaveAPI(url, user_agent)
             save_api.save()
