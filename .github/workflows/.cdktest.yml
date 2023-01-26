@@ -9,7 +9,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: check dir
-        run: ls
+        run: find . -regex '.*requirements.txt$'
       - name: cdk diff
         uses: youyo/aws-cdk-github-actions@v2
         with:
